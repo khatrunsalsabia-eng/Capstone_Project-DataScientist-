@@ -139,38 +139,60 @@ if st.button("🚀 Analisis Kandidat (Run AI)", use_container_width=True):
             else:
                 st.success("✅ **KANDIDAT VALID (DOMAIN IT)**")
                 
-                # Menampilkan 4 Metrik Utama
+                # Menampilkan 4 Metrik Utama dengan Fitur Tooltip (Help) untuk HRD
                 m1, m2, m3, m4 = st.columns(4)
-                m1.metric("Kategori Diprediksi", predicted_category)
-                m2.metric("Keyakinan AI (Confidence)", f"{confidence:.1f}%")
-                m3.metric("Skill Match Score", f"{skill_score:.1f}%")
-                m4.metric("Hybrid Final Score", f"{final_score:.1f}%")
+                m1.metric("Kategori Diprediksi", predicted_category, 
+                          help="Pekerjaan spesifik di bidang IT yang paling cocok untuk kandidat berdasarkan hasil analisis model Deep Learning.")
+                
+                m2.metric("Keyakinan AI (Confidence)", f"{confidence:.1f}%", 
+                          help="Tingkat kepercayaan model AI bahwa CV ini benar-benar milik seorang praktisi IT (Wajib > 50.0% untuk lolos filter).")
+                
+                m3.metric("Skill Match Score", f"{skill_score:.1f}%", 
+                          help="Persentase jumlah hard-skill krusial yang diminta di lowongan kerja dan berhasil ditemukan di dalam CV pelamar.")
+                
+                m4.metric("Hybrid Final Score", f"{final_score:.1f}%", 
+                          help="Skor akhir gabungan berbobot: 60% Kemiripan Teks Semantik (Cosine) + 40% Kecocokan Kata Kunci Keahlian.")
 
-                # Progress Bar
-                st.subheader("Tingkat Kecocokan (Compatibility Level)")
+                st.markdown("---")
+
+                # REVISI: Tampilan Persentase & Penjelasan Parameter Kecocokan
+                st.subheader("🎯 Ringkasan Relevansi Kandidat")
+                
+                # Menampilkan angka persentase besar yang terpampang nyata
+                st.markdown(f"#### Tingkat Kecocokan Akhir (Total Compatibility): **{final_score:.1f}%**")
                 st.progress(int(final_score))
                 
-                # Kesimpulan & Interpretasi
-                st.subheader("Interpretasi & Rekomendasi")
+                # Fitur Transparansi Penilaian (Sangat disukai Advisor Rekrutmen)
+                with st.expander("🔍 Lihat Detail Cara AI Menilai Kandidat Ini (Rasio Bobot 60:40)"):
+                    st.markdown(f"""
+                    Sistem mengalkulasi nilai akhir kandidat secara objektif berdasarkan dua pilar utama:
+                    1. **Kemiripan Semantik & Pengalaman Kerja (Bobot 60%):** Mendapatkan skor **{sim_score:.1f}%**. Pilar ini menilai kesesuaian narasi cerita, latar belakang, dan portofolio kandidat dengan ekspektasi lowongan, meskipun kata-katanya tidak persis sama.
+                    2. **Pencocokan Kata Kunci Keahlian Mutlak (Bobot 40%):** Mendapatkan skor **{skill_score:.1f}%**. Pilar ini memindai secara kaku ada atau tidaknya keyword keahlian IT spesifik yang wajib dikuasai kandidat.
+                    """)
+                
+                # Kesimpulan & Interpretasi Bisnis
+                st.subheader("💡 Rekomendasi Sistem untuk HRD")
                 if final_score >= 75:
-                    st.info("💡 **Rekomendasi:** Kandidat ini **SANGAT DIREKOMENDASIKAN**. Kandidat sangat cocok dengan kebutuhan pekerjaan.")
+                    st.info("Kandidat ini **SANGAT DIREKOMENDASIKAN**. Kompetensi dan pengalaman sangat selaras dengan kriteria lowongan. Prioritaskan untuk wawancara teknis.")
                 elif final_score >= 50:
-                    st.warning("💡 **Rekomendasi:** Kandidat ini **MEMENUHI STANDAR MINIMAL**. Cocok secara moderat.")
+                    st.warning("Kandidat ini **MEMENUHI STANDAR MINIMAL**. Memiliki kualifikasi dasar moderat, disarankan untuk masuk ke tahap screening berkas manual.")
                 else:
-                    st.error("💡 **Rekomendasi:** Kandidat ini **TIDAK DISARANKAN**. Kecocokan rendah terhadap kebutuhan pekerjaan.")
+                    st.error("Kandidat ini **TIDAK DISARANKAN**. Tingkat kecocokan terlalu rendah terhadap profil pekerjaan yang dibutuhkan.")
 
-                # Fitur Centang Skill dari Kode Lama Aqila
-                st.subheader("🛠️ Keahlian yang Terdeteksi Cocok")
+                # Fitur Centang Keahlian Tertata Rapi
+                st.subheader("🛠️ Keahlian IT yang Terdeteksi Cocok")
                 matched_skills = []
                 for skill in skills_list:
                     if skill in cv_input.lower() and skill in job_input.lower():
                         matched_skills.append(skill.title())
 
                 if matched_skills:
-                    for skill in matched_skills:
-                        st.write(f"✅ {skill}")
+                    # Menampilkan keahlian dalam format kolom horizontal agar tidak memanjang ke bawah
+                    cols = st.columns(4)
+                    for idx, skill in enumerate(matched_skills):
+                        cols[idx % 4].write(f"✅ {skill}")
                 else:
-                    st.write("Tidak ada keahlian spesifik yang terdeteksi cocok secara langsung.")
+                    st.write("Tidak ada keahlian spesifik dari daftar utama yang terdeteksi cocok secara langsung.")
 
 st.markdown("---")
 st.markdown("Developed for Capstone Project | CV Matching using NLP & Machine Learning")
