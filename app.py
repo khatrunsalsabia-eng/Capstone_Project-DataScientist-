@@ -87,7 +87,7 @@ if st.button("🚀 Analisis Kandidat (Run AI)", use_container_width=True):
             predicted_category = encoder.inverse_transform([predicted_class_index])[0]
 
             # B. PERHITUNGAN HYBRID SCORING
-            sim_score = calculate_similarity(cv_input, job_input, vectorizer) * 100
+            sim_score = calculate_similarity(cv_input, job_input) * 100
             skill_score = calculate_skill_match(cv_input, job_input)
             final_score = (sim_score + skill_score) / 2
 
