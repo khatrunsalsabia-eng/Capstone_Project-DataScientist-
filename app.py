@@ -49,6 +49,8 @@ def load_ai_models():
         st.error(f"Gagal memuat model AI. Pastikan file .pkl dan .keras ada di folder yang benar. Error: {e}")
         return None, None, None
     
+    vectorizer, encoder, model = load_ai_models()
+    
 # --- 5. DAFTAR SKILL (Untuk Visualisasi Centang) ---
 # Diambil dari kodemu yang lama agar visualisasi keahlian tetap muncul
 skills_list = [
