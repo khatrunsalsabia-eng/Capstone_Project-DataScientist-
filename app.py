@@ -102,8 +102,26 @@ if st.button("🚀 Analisis Kandidat (Run AI)", use_container_width=True):
             else:
                 sim_score = sim_result * 100
                 
-            # 3. Hitung Kecocokan Skill (Ini tetap aman menggunakan teks mentah)
-            skill_score = calculate_skill_match(cv_input, job_input)
+            # 3. Hitung Kecocokan Skill 
+            # Kita menggunakan Try-Except agar aplikasi tidak langsung crash
+            try:
+                # Percobaan 1: Mungkin dia butuh 3 argumen (termasuk skills_list)
+                skill_result = calculate_skill_match(cv_input, job_input, skills_list)
+            except TypeError:
+                try:
+                    # Percobaan 2: Mungkin dia minta data dibungkus dalam bentuk Array/List
+                    skill_result = calculate_skill_match([cv_input], [job_input])
+                except TypeError:
+                    # Percobaan 3: Default bawaan (2 argumen teks mentah)
+                    skill_result = calculate_skill_match(cv_input, job_input)
+
+            # Ekstrak angkanya saja jika hasilnya berbentuk list/array dari tim AI
+            if isinstance(skill_result, list) or type(skill_result).__module__ == np.__name__:
+                skill_score = skill_result[0]
+            elif hasattr(skill_result, 'iloc'): # Jika hasilnya Pandas Series
+                skill_score = skill_result.iloc[0]
+            else:
+                skill_score = skill_result
 
             # Menerapkan rasio bobot: 60% Kemiripan Teks, 40% Kecocokan Skill
             final_score = (sim_score * 0.6) + (skill_score * 0.4)
