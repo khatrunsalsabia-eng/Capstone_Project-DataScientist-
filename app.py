@@ -61,15 +61,17 @@ skills_list = [
 
 # --- 6. UI INPUT TEKS ---
 st.markdown("---")
+st.info("💡 **Catatan:** Mesin AI saat ini dioptimalkan untuk memproses dokumen dalam **Bahasa Inggris**. Mohon pastikan teks CV dan Job Description yang dimasukkan menggunakan Bahasa Inggris untuk hasil yang akurat.")
+
 col1, col2 = st.columns(2)
 
 with col1:
     st.markdown("### 📄 Teks Curriculum Vitae (CV)")
-    cv_input = st.text_area("Tempelkan seluruh teks CV pelamar di sini:", height=250)
+    cv_input = st.text_area("Tempelkan seluruh teks CV pelamar (English):", height=250)
 
 with col2:
     st.markdown("### 🏢 Teks Job Description (JD)")
-    job_input = st.text_area("Tempelkan deskripsi lowongan pekerjaan (IT) di sini:", height=250)
+    job_input = st.text_area("Tempelkan deskripsi lowongan pekerjaan (English):", height=250)
 
 # --- 7. PROSES PREDIKSI & SCORING ---
 if st.button("🚀 Analisis Kandidat (Run AI)", use_container_width=True):
