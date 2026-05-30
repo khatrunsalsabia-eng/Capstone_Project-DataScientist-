@@ -1,6 +1,4 @@
-# =========================================================
 # TECH HIRE INTELLIGENCE - STREAMLIT DASHBOARD
-# =========================================================
 
 import streamlit as st
 import joblib
@@ -52,7 +50,6 @@ def load_ai_models():
 vectorizer, encoder, model = load_ai_models()
     
 # --- 5. DAFTAR SKILL (Untuk Visualisasi Centang) ---
-# Diambil dari kodemu yang lama agar visualisasi keahlian tetap muncul
 skills_list = [
     'python', 'sql', 'machine learning', 'deep learning', 'tensorflow',
     'pandas', 'power bi', 'tableau', 'excel', 'communication', 'data analysis',
@@ -133,7 +130,8 @@ if st.button("🚀 Analisis Kandidat (Run AI)", use_container_width=True):
             st.header("📊 Hasil Analisis AI")
 
             # Logika Cerdas: Filter Kepercayaan
-            if confidence < 50.0:
+            # Logika Cerdas: Filter Kepercayaan & Filter Skill Minimum
+            if confidence < 50.0 or skill_score < 15.0:
                 st.error("🚨 **PERINGATAN: CV DITOLAK (NON-IT / OUT OF DOMAIN)** 🚨")
                 st.write(f"Tingkat keyakinan AI sangat rendah ({confidence:.2f}%). Teks kemungkinan besar bukan dari ranah IT.")
             else:
