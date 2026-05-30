@@ -38,16 +38,17 @@ dengan **Job Description (JD)** menggunakan pendekatan NLP dan Machine Learning.
 @st.cache_resource
 def load_ai_models():
     try:
-        vectorizer = joblib.load('vectorizer_v10.pkl')
-        encoder = joblib.load('label_encoder_v10.pkl')
-        model = load_model('model_v10_finetuned.keras')
+        
+        vectorizer = joblib.load('tfidf_vectorizer_final.pkl')
+        encoder = joblib.load('label_encoder_final.pkl')
+        
+        model = load_model('tech_hire_model_final.keras') 
+        
         return vectorizer, encoder, model
     except Exception as e:
         st.error(f"Gagal memuat model AI. Pastikan file .pkl dan .keras ada di folder yang benar. Error: {e}")
         return None, None, None
-
-vectorizer, encoder, model = load_ai_models()
-
+    
 # --- 5. DAFTAR SKILL (Untuk Visualisasi Centang) ---
 # Diambil dari kodemu yang lama agar visualisasi keahlian tetap muncul
 skills_list = [
