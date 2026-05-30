@@ -6,4 +6,4 @@ matplotlib
 seaborn
 streamlit
 joblib
-tensorflow-cpu
+tensorflow-cpu==2.15.0
