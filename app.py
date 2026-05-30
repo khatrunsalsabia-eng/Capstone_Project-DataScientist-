@@ -86,10 +86,27 @@ if st.button("🚀 Analisis Kandidat (Run AI)", use_container_width=True):
             confidence = np.max(prediction) * 100
             predicted_category = encoder.inverse_transform([predicted_class_index])[0]
 
-            # B. PERHITUNGAN HYBRID SCORING
-            sim_score = calculate_similarity(cv_input, job_input) * 100
+            # B. PERHITUNGAN HYBRID SCORING (Revisi Bobot 60/40)
+            
+            # 1. Transformasi teks mentah menjadi vektor matematika (TF-IDF)
+            cv_vec = vectorizer.transform([cv_input])
+            job_vec = vectorizer.transform([job_input])
+            
+            # 2. Hitung Kemiripan (Similarity)
+            sim_result = calculate_similarity(cv_vec, job_vec)
+            
+            # (Karena fungsi tim AI mengembalikan bentuk list seperti [0.85], 
+            # kita wajib mengambil elemen pertamanya saja menggunakan [0])
+            if isinstance(sim_result, list) or type(sim_result).__module__ == np.__name__:
+                sim_score = sim_result[0] * 100
+            else:
+                sim_score = sim_result * 100
+                
+            # 3. Hitung Kecocokan Skill (Ini tetap aman menggunakan teks mentah)
             skill_score = calculate_skill_match(cv_input, job_input)
-            final_score = (sim_score + skill_score) / 2
+
+            # Menerapkan rasio bobot: 60% Kemiripan Teks, 40% Kecocokan Skill
+            final_score = (sim_score * 0.6) + (skill_score * 0.4)
 
             # C. TAMPILAN HASIL & CONFIDENCE FILTER
             st.markdown("---")
