@@ -125,31 +125,37 @@ if st.button("🚀 Analisis Kandidat (Run AI)", use_container_width=True):
             # Menerapkan rasio bobot: 60% Kemiripan Teks, 40% Kecocokan Skill
             final_score = (sim_score * 0.6) + (skill_score * 0.4)
 
+            # --- PASTIKAN SKILL SCORE ADALAH PERSENTASE (0-100) ---
+            if skill_score <= 1.0:
+                skill_score = skill_score * 100
+
             # C. TAMPILAN HASIL & CONFIDENCE FILTER
             st.markdown("---")
             st.header("📊 Hasil Analisis AI")
 
-            # Logika Cerdas: Filter Kepercayaan
-            # Logika Cerdas: Filter Kepercayaan & Filter Skill Minimum
-            if confidence < 50.0 or skill_score < 15.0:
+            # Logika Cerdas: Pisahkan Filter Domain dan Filter Skill
+            if confidence < 50.0:
                 st.error("🚨 **PERINGATAN: CV DITOLAK (NON-IT / OUT OF DOMAIN)** 🚨")
                 st.write(f"Tingkat keyakinan AI sangat rendah ({confidence:.2f}%). Teks kemungkinan besar bukan dari ranah IT.")
+            elif skill_score < 15.0:
+                st.warning("⚠️ **PERINGATAN: SKILL TIDAK MEMENUHI STANDAR** ⚠️")
+                st.write(f"CV ini masuk ranah IT, tetapi skor kecocokan skill sangat rendah ({skill_score:.1f}%).")
             else:
-                st.success("✅ **KANDIDAT VALID (DOMAIN IT)**")
+                st.success("✅ **KANDIDAT VALID (DOMAIN IT & MEMENUHI SKILL)**")
                 
                 # Menampilkan 4 Metrik Utama dengan Fitur Tooltip (Help) untuk HRD
                 m1, m2, m3, m4 = st.columns(4)
                 m1.metric("Kategori Diprediksi", predicted_category, 
-                          help="Pekerjaan spesifik di bidang IT yang paling cocok untuk kandidat berdasarkan hasil analisis model Deep Learning.")
+                          help="Pekerjaan spesifik di bidang IT yang paling cocok.")
                 
                 m2.metric("Keyakinan AI (Confidence)", f"{confidence:.1f}%", 
-                          help="Tingkat kepercayaan model AI bahwa CV ini benar-benar milik seorang praktisi IT (Wajib > 50.0% untuk lolos filter).")
+                          help="Tingkat kepercayaan model AI bahwa CV ini dari praktisi IT.")
                 
                 m3.metric("Skill Match Score", f"{skill_score:.1f}%", 
-                          help="Persentase jumlah hard-skill krusial yang diminta di lowongan kerja dan berhasil ditemukan di dalam CV pelamar.")
+                          help="Persentase jumlah hard-skill yang sesuai.")
                 
                 m4.metric("Hybrid Final Score", f"{final_score:.1f}%", 
-                          help="Skor akhir gabungan berbobot: 60% Kemiripan Teks Semantik (Cosine) + 40% Kecocokan Kata Kunci Keahlian.")
+                          help="60% Kemiripan Teks Semantik + 40% Kecocokan Keahlian.")
 
                 st.markdown("---")
 
