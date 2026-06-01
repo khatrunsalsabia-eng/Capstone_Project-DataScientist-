@@ -4,6 +4,7 @@ import streamlit as st
 import joblib
 import numpy as np
 from tensorflow.keras.models import load_model
+import plotly.graph_objects as go # TAMBAHAN BARU: Library untuk visualisasi Gauge Chart
 
 # Memanggil fungsi modular dari tim
 from feature_engineering import calculate_similarity, calculate_skill_match
@@ -120,54 +121,67 @@ if st.button("🚀 Mulai Analisis Kandidat", use_container_width=True):
             st.header("📊 Laporan Hasil Seleksi Kandidat")
 
             # --- SABUK PENGAMAN (HARD-SKILL GUARDRAIL) ---
-            # Daftar kata kunci teknis mutlak (tanpa soft-skill seperti communication)
             hard_skills = ['python', 'sql', 'machine learning', 'deep learning', 'tensorflow', 'pandas', 'react', 'node', 'php', 'github', 'java', 'html', 'css', 'javascript']
-            
-            # Cek apakah ada minimal 1 hard-skill di CV pelamar
             cv_has_hard_skill = any(skill in cv_input.lower() for skill in hard_skills)
 
             # Logika Cerdas: Pisahkan Filter Domain dan Filter Skill
             if not cv_has_hard_skill:
-                # Lapis 1: Jika tidak ada hard-skill sama sekali, langsung tolak (Filter Non-IT tingkat ketat)
                 st.error("🚨 **PERINGATAN: KANDIDAT DITOLAK OTOMATIS (OUT OF SCOPE)** 🚨")
                 st.write(f"Meskipun sistem sempat memprediksi profil ini adalah **{predicted_category.title()}**, namun AI mendeteksi **0% Hard-Skill IT teknis** di dalam teks CV pelamar. Dokumen ini teridentifikasi sebagai Non-IT (Marketing/Sales/Admin/dll) dan tidak lolos tahap verifikasi.")
             
             elif confidence < 50.0:
-                # Lapis 2: Jika AI tidak yakin ini profil IT (Filter Non-IT tingkat sedang)
                 st.error("🚨 **PERINGATAN: KANDIDAT DITOLAK OTOMATIS (LOW VALIDITY)** 🚨")
                 st.write(f"Tingkat Validitas Profil hanya **{confidence:.2f}%**. Sistem mendeteksi profil pelamar ini berada di luar ranah spesifikasi IT yang dibutuhkan, atau deskripsi keahliannya terlalu umum (Admin/Hardware/Non-Teknis).")
             
             elif skill_score < 15.0:
-                # Lapis 3: Jika kandidat memang IT, tapi skill-nya jauh di bawah harapan
                 st.warning("⚠️ **PERINGATAN: KEAHLIAN TEKNIS TERLALU RENDAH** ⚠️")
                 st.write(f"CV ini valid di bidang IT, namun persentase kecocokan keahlian (Skill Match) sangat rendah ({skill_score:.1f}%).")
             
             else:
-                # Lolos Semua Ujian: Tampilkan Dashboard Rekomendasi
                 st.success("✅ **KANDIDAT VALID (DOMAIN IT TERVERIFIKASI)**")
                 
-                # Menampilkan 4 Metrik Utama dengan Fitur Tooltip (Help) untuk HRD
                 m1, m2, m3, m4 = st.columns(4)
                 m1.metric("Keahlian Dominan Pelamar", predicted_category.title(), 
                           help="Berdasarkan CV, AI menebak posisi ini yang paling sesuai untuk keseharian pelamar.")
-                
                 m2.metric("Validitas Profil IT", f"{confidence:.1f}%", 
                           help="Keyakinan AI bahwa pelamar ini benar-benar praktisi IT (mencegah CV non-IT masuk).")
-                
                 m3.metric("Kecocokan Keahlian", f"{skill_score:.1f}%", 
                           help="Persentase jumlah keahlian teknis (hard-skill) di lowongan yang benar-benar dimiliki pelamar.")
-                
                 m4.metric("Total Skor Kecocokan", f"{final_score:.1f}%", 
                           help="Skor final (60% Relevansi Pengalaman + 40% Kecocokan Keahlian teknis).")
 
                 st.markdown("---")
 
-                # REVISI: Tampilan Persentase & Penjelasan Parameter Kecocokan
+                # REVISI: Tampilan Persentase dengan Gauge Chart Interaktif
                 st.subheader("🎯 Kesimpulan Kelayakan Kandidat")
                 
-                # Menampilkan angka persentase besar yang terpampang nyata
-                st.markdown(f"#### Skor Kecocokan Akhir (Total Match Score): **{final_score:.1f}%**")
-                st.progress(int(final_score))
+                # Membuat Gauge Chart (Speedometer) dengan Plotly
+                fig = go.Figure(go.Indicator(
+                    mode = "gauge+number",
+                    value = final_score,
+                    domain = {'x': [0, 1], 'y': [0, 1]},
+                    title = {'text': "Total Match Score", 'font': {'size': 24}},
+                    gauge = {
+                        'axis': {'range': [None, 100]},
+                        'bar': {'color': "darkblue"},
+                        'steps': [
+                            {'range': [0, 50], 'color': "lightcoral"},   # Merah untuk Ditolak
+                            {'range': [50, 75], 'color': "khaki"},       # Kuning untuk Memenuhi Standar
+                            {'range': [75, 100], 'color': "lightgreen"}  # Hijau untuk Sangat Direkomendasikan
+                        ],
+                        'threshold': {
+                            'line': {'color': "red", 'width': 4},
+                            'thickness': 0.75,
+                            'value': final_score
+                        }
+                    }
+                ))
+                
+                # Menyesuaikan ukuran chart agar pas di dashboard
+                fig.update_layout(height=300, margin=dict(l=20, r=20, t=50, b=20))
+                
+                # Menampilkan chart di Streamlit
+                st.plotly_chart(fig, use_container_width=True)
                 
                 # Kesimpulan & Interpretasi Bisnis
                 if final_score >= 75:
@@ -177,7 +191,6 @@ if st.button("🚀 Mulai Analisis Kandidat", use_container_width=True):
                 else:
                     st.error("📌 **KEPUTUSAN:** Kandidat ini **TIDAK DISARANKAN**. Tingkat kecocokan terlalu rendah terhadap profil pekerjaan yang dibutuhkan.")
                 
-                # Fitur Transparansi Penilaian (Sangat disukai Advisor Rekrutmen)
                 with st.expander("🔍 Bagaimana AI Menghitung Angka Ini? (Transparansi Penilaian)"):
                     st.markdown(f"""
                     Skor akhir **{final_score:.1f}%** di atas tidak muncul secara acak, melainkan dievaluasi objektif berdasarkan dua metrik:
@@ -185,7 +198,6 @@ if st.button("🚀 Mulai Analisis Kandidat", use_container_width=True):
                     2. **Pencocokan Kata Kunci Teknis (Bobot 40%):** Mendapatkan skor **{skill_score:.1f}%**. AI memindai secara presisi jumlah *software*, *tools*, atau bahasa pemrograman spesifik yang wajib dikuasai kandidat sesuai permintaan lowongan.
                     """)
 
-                # Fitur Centang Keahlian Tertata Rapi
                 st.subheader("🛠️ Keahlian Utama yang Terverifikasi")
                 matched_skills = []
                 for skill in skills_list:
@@ -194,7 +206,6 @@ if st.button("🚀 Mulai Analisis Kandidat", use_container_width=True):
 
                 if matched_skills:
                     st.write("Sistem mendeteksi pelamar menguasai keahlian berikut yang juga dibutuhkan di lowongan:")
-                    # Menampilkan keahlian dalam format kolom horizontal agar tidak memanjang ke bawah
                     cols = st.columns(4)
                     for idx, skill in enumerate(matched_skills):
                         cols[idx % 4].write(f"✅ **{skill}**")
