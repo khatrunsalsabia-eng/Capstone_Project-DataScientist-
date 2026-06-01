@@ -119,14 +119,31 @@ if st.button("🚀 Mulai Analisis Kandidat", use_container_width=True):
             st.markdown("---")
             st.header("📊 Laporan Hasil Seleksi Kandidat")
 
+            # --- SABUK PENGAMAN (HARD-SKILL GUARDRAIL) ---
+            # Daftar kata kunci teknis mutlak (tanpa soft-skill seperti communication)
+            hard_skills = ['python', 'sql', 'machine learning', 'deep learning', 'tensorflow', 'pandas', 'react', 'node', 'php', 'github', 'java', 'html', 'css', 'javascript']
+            
+            # Cek apakah ada minimal 1 hard-skill di CV pelamar
+            cv_has_hard_skill = any(skill in cv_input.lower() for skill in hard_skills)
+
             # Logika Cerdas: Pisahkan Filter Domain dan Filter Skill
-            if confidence < 50.0:
+            if not cv_has_hard_skill:
+                # Lapis 1: Jika tidak ada hard-skill sama sekali, langsung tolak (Filter Non-IT tingkat ketat)
                 st.error("🚨 **PERINGATAN: KANDIDAT DITOLAK OTOMATIS (OUT OF SCOPE)** 🚨")
+                st.write(f"Meskipun sistem sempat memprediksi profil ini berbau **{predicted_category.title()}**, namun AI mendeteksi **0% Hard-Skill IT teknis** di dalam teks CV pelamar. Dokumen ini teridentifikasi sebagai Non-IT (Marketing/Sales/Admin/dll) dan tidak lolos tahap verifikasi.")
+            
+            elif confidence < 50.0:
+                # Lapis 2: Jika AI tidak yakin ini profil IT (Filter Non-IT tingkat sedang)
+                st.error("🚨 **PERINGATAN: KANDIDAT DITOLAK OTOMATIS (LOW VALIDITY)** 🚨")
                 st.write(f"Tingkat Validitas Profil hanya **{confidence:.2f}%**. Sistem mendeteksi profil pelamar ini berada di luar ranah spesifikasi IT yang dibutuhkan, atau deskripsi keahliannya terlalu umum (Admin/Hardware/Non-Teknis).")
+            
             elif skill_score < 15.0:
+                # Lapis 3: Jika kandidat memang IT, tapi skill-nya jauh di bawah harapan
                 st.warning("⚠️ **PERINGATAN: KEAHLIAN TEKNIS TERLALU RENDAH** ⚠️")
                 st.write(f"CV ini valid di bidang IT, namun persentase kecocokan keahlian (Skill Match) sangat rendah ({skill_score:.1f}%).")
+            
             else:
+                # Lolos Semua Ujian: Tampilkan Dashboard Rekomendasi
                 st.success("✅ **KANDIDAT VALID (DOMAIN IT TERVERIFIKASI)**")
                 
                 # Menampilkan 4 Metrik Utama dengan Fitur Tooltip (Help) untuk HRD
