@@ -130,7 +130,7 @@ if st.button("🚀 Mulai Analisis Kandidat", use_container_width=True):
             if not cv_has_hard_skill:
                 # Lapis 1: Jika tidak ada hard-skill sama sekali, langsung tolak (Filter Non-IT tingkat ketat)
                 st.error("🚨 **PERINGATAN: KANDIDAT DITOLAK OTOMATIS (OUT OF SCOPE)** 🚨")
-                st.write(f"Meskipun sistem sempat memprediksi profil ini berbau **{predicted_category.title()}**, namun AI mendeteksi **0% Hard-Skill IT teknis** di dalam teks CV pelamar. Dokumen ini teridentifikasi sebagai Non-IT (Marketing/Sales/Admin/dll) dan tidak lolos tahap verifikasi.")
+                st.write(f"Meskipun sistem sempat memprediksi profil ini adalah **{predicted_category.title()}**, namun AI mendeteksi **0% Hard-Skill IT teknis** di dalam teks CV pelamar. Dokumen ini teridentifikasi sebagai Non-IT (Marketing/Sales/Admin/dll) dan tidak lolos tahap verifikasi.")
             
             elif confidence < 50.0:
                 # Lapis 2: Jika AI tidak yakin ini profil IT (Filter Non-IT tingkat sedang)
