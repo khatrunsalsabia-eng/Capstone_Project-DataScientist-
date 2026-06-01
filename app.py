@@ -121,8 +121,8 @@ if st.button("🚀 Mulai Analisis Kandidat", use_container_width=True):
 
             # Logika Cerdas: Pisahkan Filter Domain dan Filter Skill
             if confidence < 50.0:
-                st.error("🚨 **PERINGATAN: KANDIDAT DITOLAK OTOMATIS** 🚨")
-                st.write(f"Sistem mendeteksi bahwa CV ini **bukan dari ranah IT** (Tingkat Validitas Profil hanya {confidence:.2f}%). Harap periksa apakah kandidat salah mengunggah berkas.")
+                st.error("🚨 **PERINGATAN: KANDIDAT DITOLAK OTOMATIS (OUT OF SCOPE)** 🚨")
+                st.write(f"Tingkat Validitas Profil hanya **{confidence:.2f}%**. Sistem mendeteksi profil pelamar ini berada di luar ranah spesifikasi IT yang dibutuhkan, atau deskripsi keahliannya terlalu umum (Admin/Hardware/Non-Teknis).")
             elif skill_score < 15.0:
                 st.warning("⚠️ **PERINGATAN: KEAHLIAN TEKNIS TERLALU RENDAH** ⚠️")
                 st.write(f"CV ini valid di bidang IT, namun persentase kecocokan keahlian (Skill Match) sangat rendah ({skill_score:.1f}%).")
