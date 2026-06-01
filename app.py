@@ -122,13 +122,14 @@ if st.button("🚀 Analisis Kandidat (Run AI)", use_container_width=True):
             else:
                 skill_score = skill_result
 
-            # Menerapkan rasio bobot: 60% Kemiripan Teks, 40% Kecocokan Skill
-            final_score = (sim_score * 0.6) + (skill_score * 0.4)
-
-            # --- PASTIKAN SKILL SCORE ADALAH PERSENTASE (0-100) ---
+            # 🛠️ FIX MATEMATIS: Pastikan skill_score menjadi persentase (0-100) 
+            # SEBELUM dihitung ke dalam bobot final_score
             if skill_score <= 1.0:
                 skill_score = skill_score * 100
 
+            # 4. Menerapkan rasio bobot: 60% Kemiripan Teks, 40% Kecocokan Skill
+            final_score = (sim_score * 0.6) + (skill_score * 0.4)
+            
             # C. TAMPILAN HASIL & CONFIDENCE FILTER
             st.markdown("---")
             st.header("📊 Hasil Analisis AI")
