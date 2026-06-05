@@ -1,18 +1,18 @@
-# TECH HIRE INTELLIGENCE - STREAMLIT DASHBOARD
+# main app untuk dashboard streamlit
 
 import streamlit as st
 import joblib
 import numpy as np
 from tensorflow.keras.models import load_model
-import plotly.graph_objects as go # TAMBAHAN BARU: Library untuk visualisasi Gauge Chart
+import plotly.graph_objects as go # buat bikin visualisasi gauge chart
 
-# Memanggil fungsi modular dari tim
+# import fungsi dari modul feature engineering
 from feature_engineering import calculate_similarity, calculate_skill_match
 
-# --- 1. SETUP HALAMAN STREAMLIT ---
+# setup layout halaman
 st.set_page_config(page_title="Tech Hire Intelligence", page_icon="💼", layout="wide")
 
-# --- 2. SIDEBAR (Panduan Khusus HRD) ---
+# bikin sidebar buat panduan hrd
 st.sidebar.header("📌 Panduan HRD")
 st.sidebar.info("""
 **Cara Menggunakan Dashboard:**
@@ -29,13 +29,13 @@ st.sidebar.error("**< 50% : Tidak Disarankan**\nKualifikasi kandidat jauh di baw
 st.sidebar.markdown("---")
 st.sidebar.caption("Sistem didukung oleh AI Hybrid Scoring (Konteks Teks 60% + Kata Kunci Keahlian 40%) untuk mencegah manipulasi kata kunci pada CV.")
 
-# --- 3. JUDUL UTAMA ---
+# bagian header utama
 st.title("💼 Tech Hire Intelligence System")
 st.markdown("""
 **Asisten Cerdas Rekrutmen IT Anda.** Gunakan sistem ini untuk melakukan *screening* awal secara objektif dan instan. Sistem akan mengalkulasi kecocokan antara **Curriculum Vitae (CV)** kandidat dengan **Job Description (JD)**.
 """)
 
-# --- 4. LOAD MODEL & VECTORIZER ---
+# load model dan pkl, pakai cache biar ga berat pas di-refresh
 @st.cache_resource
 def load_ai_models():
     try:
@@ -49,14 +49,14 @@ def load_ai_models():
     
 vectorizer, encoder, model = load_ai_models()
     
-# --- 5. DAFTAR SKILL (Untuk Visualisasi Centang) ---
+# list skill buat dicek match-nya nanti
 skills_list = [
     'python', 'sql', 'machine learning', 'deep learning', 'tensorflow',
     'pandas', 'power bi', 'tableau', 'excel', 'communication', 'data analysis',
     'react', 'node js', 'php', 'github', 'agile', 'scrum'
 ]
 
-# --- 6. UI INPUT TEKS ---
+# form input teks
 st.markdown("---")
 st.info("💡 **Tips Rekrutmen:** Sistem dioptimalkan untuk membaca dokumen **Bahasa Inggris** (standar industri IT). Pastikan teks CV dan JD berbahasa Inggris untuk penilaian paling akurat.")
 
@@ -70,7 +70,7 @@ with col2:
     st.markdown("### 🏢 Teks Job Description (JD)")
     job_input = st.text_area("Tempelkan deskripsi pekerjaan (Job Desc) di sini:", height=250, placeholder="Contoh: We are looking for a Data Scientist who is proficient in Machine Learning...")
 
-# --- 7. PROSES PREDIKSI & SCORING ---
+# eksekusi pas tombol diklik
 if st.button("🚀 Mulai Analisis Kandidat", use_container_width=True):
     
     if cv_input.strip() == "" or job_input.strip() == "":
@@ -78,14 +78,14 @@ if st.button("🚀 Mulai Analisis Kandidat", use_container_width=True):
     elif vectorizer and encoder and model:
         with st.spinner("AI sedang membaca dan mengevaluasi profil kandidat..."):
             
-            # A. PREDIKSI MENGGUNAKAN DEEP LEARNING
+            # prediksi role kandidat
             cv_vector = vectorizer.transform([cv_input]).toarray()
             prediction = model.predict(cv_vector)
             predicted_class_index = np.argmax(prediction)
             confidence = np.max(prediction) * 100
             predicted_category = encoder.inverse_transform([predicted_class_index])[0]
 
-            # B. PERHITUNGAN HYBRID SCORING (Revisi Bobot 60/40)
+            # hitung skor hybrid
             cv_vec = vectorizer.transform([cv_input])
             job_vec = vectorizer.transform([job_input])
             
@@ -116,15 +116,15 @@ if st.button("🚀 Mulai Analisis Kandidat", use_container_width=True):
 
             final_score = (sim_score * 0.6) + (skill_score * 0.4)
             
-            # C. TAMPILAN HASIL & CONFIDENCE FILTER
+            # render hasil ke ui
             st.markdown("---")
             st.header("📊 Laporan Hasil Seleksi Kandidat")
 
-            # --- SABUK PENGAMAN (HARD-SKILL GUARDRAIL) ---
+            # guardrail buat ngecek ada hard skill it atau engga
             hard_skills = ['python', 'sql', 'machine learning', 'deep learning', 'tensorflow', 'pandas', 'react', 'node', 'php', 'github', 'java', 'html', 'css', 'javascript']
             cv_has_hard_skill = any(skill in cv_input.lower() for skill in hard_skills)
 
-            # Logika Cerdas: Pisahkan Filter Domain dan Filter Skill
+            # validasi kelayakan
             if not cv_has_hard_skill:
                 st.error("🚨 **PERINGATAN: KANDIDAT DITOLAK OTOMATIS (OUT OF SCOPE)** 🚨")
                 st.write(f"Meskipun sistem sempat memprediksi profil ini adalah **{predicted_category.title()}**, namun AI mendeteksi **0% Hard-Skill IT teknis** di dalam teks CV pelamar. Dokumen ini teridentifikasi sebagai Non-IT (Marketing/Sales/Admin/dll) dan tidak lolos tahap verifikasi.")
@@ -152,10 +152,10 @@ if st.button("🚀 Mulai Analisis Kandidat", use_container_width=True):
 
                 st.markdown("---")
 
-                # REVISI: Tampilan Persentase dengan Gauge Chart Interaktif
+                # tampilin visualisasi gauge chart
                 st.subheader("🎯 Kesimpulan Kelayakan Kandidat")
                 
-                # Membuat Gauge Chart (Speedometer) dengan Plotly
+                # setup bentuk chart
                 fig = go.Figure(go.Indicator(
                     mode = "gauge+number",
                     value = final_score,
@@ -165,9 +165,9 @@ if st.button("🚀 Mulai Analisis Kandidat", use_container_width=True):
                         'axis': {'range': [None, 100]},
                         'bar': {'color': "darkblue"},
                         'steps': [
-                            {'range': [0, 50], 'color': "lightcoral"},   # Merah untuk Ditolak
-                            {'range': [50, 75], 'color': "khaki"},       # Kuning untuk Memenuhi Standar
-                            {'range': [75, 100], 'color': "lightgreen"}  # Hijau untuk Sangat Direkomendasikan
+                            {'range': [0, 50], 'color': "lightcoral"},   # merah
+                            {'range': [50, 75], 'color': "khaki"},       # kuning
+                            {'range': [75, 100], 'color': "lightgreen"}  # hijau
                         ],
                         'threshold': {
                             'line': {'color': "red", 'width': 4},
@@ -177,13 +177,13 @@ if st.button("🚀 Mulai Analisis Kandidat", use_container_width=True):
                     }
                 ))
                 
-                # Menyesuaikan ukuran chart agar pas di dashboard
+                # atur layout chart
                 fig.update_layout(height=300, margin=dict(l=20, r=20, t=50, b=20))
                 
-                # Menampilkan chart di Streamlit
+                # render chart ke web
                 st.plotly_chart(fig, use_container_width=True)
                 
-                # Kesimpulan & Interpretasi Bisnis
+                # hasil rekomendasi
                 if final_score >= 75:
                     st.info("📌 **KEPUTUSAN:** Kandidat ini **SANGAT DIREKOMENDASIKAN**. Kompetensi dan pengalaman sangat selaras dengan kriteria lowongan. Prioritaskan untuk dihubungi.")
                 elif final_score >= 50:
