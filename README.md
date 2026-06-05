@@ -1,5 +1,7 @@
 # Tech Hire Intelligence System Berbasis Artificial Intelligence (Data Scientist)
 
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)]((https://elemh4wgvprjdx2lscqynt.streamlit.app/))
+
 **ID Tim Capstone:** CC26-PSU379  
 **Tema:** Future-ready Work & Economy  
 **Peran Data Science:** Sistem Otomatisasi Rekomendasi & Prediksi Kesesuaian Kandidat  
@@ -57,7 +59,7 @@ Validasi ilmiah dilakukan menggunakan metode *Offline A/B Testing* dengan memban
 📁 Proyek_Capstone_CC26-PSU379/
 │
 ├── 📁 data/                                  
-│   └── resumes_dataset.jsonl                 <-- Dataset tekstual mentah (raw)
+│   ├── resumes_dataset.jsonl                 <-- Dataset tekstual mentah (raw)
 │   └── processed_data.csv                    <-- Dataset bersih siap latih
 │
 ├── 📁 notebooks/                             
@@ -72,11 +74,14 @@ Validasi ilmiah dilakukan menggunakan metode *Offline A/B Testing* dengan memban
 ├── requirements.txt                          <-- Library dependensi Python
 └── README.md                                 <-- Dokumentasi utama proyek
 
-(Catatan: File antarmuka aplikasi app.py berbasis Streamlit saat ini sedang dalam tahap pengembangan).
+## 📈 Dampak Bisnis (Business Impact)
+Efisiensi Waktu Screening: Memangkas durasi penyeleksian awal CV pelamar IT dari hitungan hari menjadi hitungan detik.
 
-📈 Dampak Bisnis (Business Impact)
-1. Efisiensi Waktu Screening: Memangkas durasi penyeleksian awal CV pelamar IT dari hitungan hari menjadi hitungan detik.
+Rekomendasi Berakurasi Tinggi: Implementasi metode Hybrid memastikan kandidat yang direkomendasikan benar-benar menguasai stack tech spesifik yang dicari, menekan angka kesalahan rekrutmen (False Negatives).
 
-2. Rekomendasi Berakurasi Tinggi: Implementasi metode Hybrid memastikan kandidat yang direkomendasikan benar-benar menguasai stack tech spesifik yang dicari, menekan angka kesalahan rekrutmen (False Negatives).
+Objektif & Standarisasi: Membantu perusahaan teknologi membangun standarisasi metrik penilaian kompetensi rekrutmen yang adil, transparan, dan berbasis data.
 
-3. Objektif & Standarisasi: Membantu perusahaan teknologi membangun standarisasi metrik penilaian kompetensi rekrutmen yang adil, transparan, dan berbasis data.
+## 🚀 Akses Streamlit
+Untuk melihat secara langsung penerapan dari model Hybrid Scoring yang telah dikembangkan, silakan akses dashboard kami melalui tautan di bawah ini:
+
+👉 https://elemh4wgvprjdx2lscqynt.streamlit.app/
