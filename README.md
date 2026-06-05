@@ -1,7 +1,5 @@
 # Tech Hire Intelligence System Berbasis Artificial Intelligence (Data Scientist)
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)]((https://elemh4wgvprjdx2lscqynt.streamlit.app/))
-
 **ID Tim Capstone:** CC26-PSU379  
 **Tema:** Future-ready Work & Economy  
 **Peran Data Science:** Sistem Otomatisasi Rekomendasi & Prediksi Kesesuaian Kandidat  
