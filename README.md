@@ -72,14 +72,25 @@ Validasi ilmiah dilakukan menggunakan metode *Offline A/B Testing* dengan memban
 ├── requirements.txt                          <-- Library dependensi Python
 └── README.md                                 <-- Dokumentasi utama proyek
 
+---
+
 ## 📈 Dampak Bisnis (Business Impact)
 Efisiensi Waktu Screening: Memangkas durasi penyeleksian awal CV pelamar IT dari hitungan hari menjadi hitungan detik.
 
 Rekomendasi Berakurasi Tinggi: Implementasi metode Hybrid memastikan kandidat yang direkomendasikan benar-benar menguasai stack tech spesifik yang dicari, menekan angka kesalahan rekrutmen (False Negatives).
 
 Objektif & Standarisasi: Membantu perusahaan teknologi membangun standarisasi metrik penilaian kompetensi rekrutmen yang adil, transparan, dan berbasis data.
+---
 
 ## 🚀 Akses Streamlit
 Untuk melihat secara langsung penerapan dari model Hybrid Scoring yang telah dikembangkan, silakan akses dashboard kami melalui tautan di bawah ini:
 
 👉 https://elemh4wgvprjdx2lscqynt.streamlit.app/
+
+---
+
+## Dokumentasi
+Berikut ini merupakan dokumen proses pengerjaan :
+https://docs.google.com/document/d/1A2NtW42EjiX0Ro6W6tCr2hab479ZFP18TJA4Nsw3cOs/edit?usp=sharing
+
+---
